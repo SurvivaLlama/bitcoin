@@ -4,9 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bitcoin Price</title>
-
-  <script src="https://unpkg.com/chart.js"></script>
-
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -38,9 +35,31 @@
       margin-bottom: 1rem;
     }
 
-    #chart-container {
-      width: 80%;
-      margin: 0 auto;
+    a.buy-bitcoin-btn {
+      display: inline-block;
+      background-color: #002c77;
+      color: #ffffff;
+      font-size: 1.2rem;
+      font-weight: bold;
+      padding: 1rem 2rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+    }
+
+    a.buy-bitcoin-btn:hover {
+      background-color: #0041ab;
+    }
+
+    a.my-website-link {
+      font-size: 1rem;
+      text-decoration: none;
+      color: #333333;
+      margin-top: 2rem;
+      display: inline-block;
+    }
+
+    a.my-website-link:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
@@ -50,10 +69,9 @@
     <div id="bitcoin-price">Loading...</div>
     <h1>Current Time:</h1>
     <div id="current-time"></div>
-    <h1>Bitcoin Price for the Past 7 Days:</h1>
-    <div id="chart-container">
-      <canvas id="bitcoin-chart"></canvas>
-    </div>
+    <h1>Buy Bitcoin:</h1>
+    <a href="https://www.coinbase.com/buy/bitcoin" target="_blank" class="buy-bitcoin-btn">Buy Bitcoin on Coinbase</a>
+    <a href="https://www.jeryd.dev" target="_blank" class="my-website-link">Visit my website: www.jeryd.dev</a>
   </div>
 
   <script>
@@ -69,79 +87,9 @@
       document.getElementById('current-time').textContent = timeString;
     }
 
-    async function fetchBitcoinPriceHistory() {
-      const toDate = new Date();
-      const fromDate = new Date();
-      fromDate.setDate(toDate.getDate() - 7);
-      
-      const response = await fetch(`https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=7&interval=daily`);
-      const data = await response.json();
-      
-      const chartData = data.prices.map(priceData => ({
-        x: new Date(priceData[0]),
-        y: priceData[1]
-      }));
-
-      return chartData;
-    }
-
-    async function createBitcoinPriceChart() {
-      const chartData = await fetchBitcoinPriceHistory();
-
-      const ctx = document.getElementById('bitcoin-chart').getContext('2d');
-      const chart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          datasets: [{
-            label: 'Bitcoin Price',
-            data: chartData,
-            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-            borderColor: 'rgba(75, 192, 192, 1)',
-            borderWidth: 2,
-            pointBackgroundColor: 'rgba(75, 192, 192, 1)',
-            tension: 0.1
-          }]
-        },
-        options: {
-          scales: {
-            x: {
-              type: 'time',
-              time: {
-                unit: 'day'
-              },
-              display: true,
-              title: {
-                display: true,
-                text: 'Date'
-              }
-            },
-            y: {
-              display: true,
-              title: {
-                display: true,
-                text: 'Price (USD)'
-              }
-            }
-          },
-          plugins: {
-            legend: {
-              display: false
-            },
-            tooltip: {
-              mode: 'nearest',
-              intersect: false
-            }
-          },
-          maintainAspectRatio: false
-        }
-      });
-    }
-
     fetchBitcoinPrice();
     displayCurrentTime();
-    createBitcoinPriceChart();
     setInterval(displayCurrentTime, 1000); // Update the time every 1000ms (1 second)
   </script>
 </body>
 </html>
-
