@@ -28,10 +28,11 @@
       margin-bottom: 1rem;
     }
 
-    #bitcoin-price {
+    #bitcoin-price, #current-time {
       font-size: 4rem;
       font-weight: bold;
       color: #333333;
+      margin-bottom: 1rem;
     }
   </style>
 </head>
@@ -39,6 +40,8 @@
   <div class="container">
     <h1>Current Bitcoin Price:</h1>
     <div id="bitcoin-price">Loading...</div>
+    <h1>Current Time:</h1>
+    <div id="current-time"></div>
   </div>
 
   <script>
@@ -48,7 +51,15 @@
       document.getElementById('bitcoin-price').textContent = '$' + data.bitcoin.usd;
     }
 
+    function displayCurrentTime() {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString();
+      document.getElementById('current-time').textContent = timeString;
+    }
+
     fetchBitcoinPrice();
+    displayCurrentTime();
+    setInterval(displayCurrentTime, 1000); // Update the time every 1000ms (1 second)
   </script>
 </body>
 </html>
