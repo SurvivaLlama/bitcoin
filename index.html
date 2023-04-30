@@ -4,10 +4,42 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bitcoin Price</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f0f0f0;
+    }
+
+    .container {
+      background-color: #ffffff;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+      border-radius: 1rem;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    #bitcoin-price {
+      font-size: 4rem;
+      font-weight: bold;
+      color: #333333;
+    }
+  </style>
 </head>
 <body>
-  <h1>Current Bitcoin Price:</h1>
-  <div id="bitcoin-price">Loading...</div>
+  <div class="container">
+    <h1>Current Bitcoin Price:</h1>
+    <div id="bitcoin-price">Loading...</div>
+  </div>
 
   <script>
     async function fetchBitcoinPrice() {
