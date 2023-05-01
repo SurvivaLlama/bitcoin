@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bitcoin Price</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -13,6 +14,16 @@
       height: 100vh;
       margin: 0;
       background-color: #f0f0f0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .firework {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      pointer-events: none;
+      opacity: 0;
     }
 
     .container {
@@ -21,6 +32,8 @@
       padding: 2rem;
       border-radius: 1rem;
       text-align: center;
+      z-index: 10;
+      position: relative;
     }
 
     h1 {
@@ -28,7 +41,7 @@
       margin-bottom: 1rem;
     }
 
-    #bitcoin-price, #current-time {
+    #bitcoin-price, #countdown-timer {
       font-size: 4rem;
       font-weight: bold;
       color: #333333;
@@ -44,6 +57,7 @@
       padding: 1rem 2rem;
       border-radius: 0.5rem;
       text-decoration: none;
+      margin-bottom: 1rem;
     }
 
     a.buy-bitcoin-btn:hover {
@@ -54,7 +68,6 @@
       font-size: 1rem;
       text-decoration: none;
       color: #333333;
-      margin-top: 2rem;
       display: inline-block;
     }
 
@@ -64,15 +77,16 @@
   </style>
 </head>
 <body>
+  <div class="firework animate__animated animate__zoomIn"></div>
   <div class="container">
     <h1>Current Bitcoin Price:</h1>
     <div id="bitcoin-price">Loading...</div>
-    <h1>Current Time:</h1>
-    <div id="current-time"></div>
+    <h1>Time Until Next Bitcoin Halving:</h1>
+    <div id="countdown-timer"></div>
     <h1>Buy Bitcoin:</h1>
     <a href="https://www.coinbase.com/buy/bitcoin" target="_blank" class="buy-bitcoin-btn">Buy Bitcoin on Coinbase</a>
     <br>
-    <a href="https://www.jeryd.dev" target="_blank" class="my-website-link">Visit me! @ jeryd.dev</a>
+    <a href="https://www.jeryd.dev" target="_blank" class="my-website-link">Visit me @ jeryd.dev</a>
   </div>
 
   <script>
@@ -82,15 +96,24 @@
       document.getElementById('bitcoin-price').textContent = '$' + data.bitcoin.usd;
     }
 
-    function displayCurrentTime() {
+    function updateCountdownTimer() {
+      const halvingDate = new Date('May 1, 2024 00:00:00');
       const now = new Date();
-      const timeString = now.toLocaleTimeString();
-      document.getElementById('current-time').textContent = timeString;
+      const timeDiff = halvingDate - now;
+      const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+      
+      document.getElementById('countdown-timer').textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
     }
 
+    setInterval(updateCountdownTimer, 1000);
+
     fetchBitcoinPrice();
-    displayCurrentTime();
-    setInterval(displayCurrentTime, 1000); // Update the time every 1000ms (1 second)
+
+    setInterval(fetchBitcoinPrice, 60000); // Update Bitcoin price every minute.
   </script>
 </body>
 </html>
+
