@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bitcoin Simple Moving Average</title>
+    <title>Bitcoin 12-Month Simple Moving Average</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -17,43 +18,98 @@
             margin: 16px 0;
         }
 
-        p {
-            font-size: 18px;
-            margin: 8px 0;
+        canvas {
+            width: 100%;
+            height: 400px;
         }
     </style>
 </head>
 <body>
-    <h1>Bitcoin Simple Moving Average (30 Days)</h1>
-    <p>Current 30-Day SMA: <span id="sma-price"></span></p>
+    <h1>Bitcoin 12-Month Simple Moving Average (SMA)</h1>
+    <canvas id="sma-chart"></canvas>
 
     <script>
-        // Function to fetch historical Bitcoin price data (last 30 days)
+        // Function to fetch historical Bitcoin price data (past 12 months)
         async function fetchHistoricalPriceData() {
-            const today = new Date();
-            const thirtyDaysAgo = new Date(today - 30 * 24 * 60 * 60 * 1000);
-            const from = `${thirtyDaysAgo.getFullYear()}-${thirtyDaysAgo.getMonth() + 1}-${thirtyDaysAgo.getDate()}`;
-            const to = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
-            const response = await fetch(`https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=30&interval=daily`);
+            const response = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=365&interval=daily');
             const data = await response.json();
             return data.prices;
         }
 
-        // Function to calculate the Simple Moving Average (SMA) from price data
-        function calculateSMA(prices) {
-            const sum = prices.reduce((accumulator, current) => accumulator + current[1], 0);
-            return sum / prices.length;
+        // Function to calculate the Simple Moving Average (SMA) for a given window size
+        function calculateSMA(prices, windowSize) {
+            const sma = [];
+            for (let i = windowSize - 1; i < prices.length; i++) {
+                const windowPrices = prices.slice(i - windowSize + 1, i + 1);
+                const sum = windowPrices.reduce((accumulator, current) => accumulator + current[1], 0);
+                const average = sum / windowSize;
+                sma.push([prices[i][0], average]);
+            }
+            return sma;
+        }
+
+        // Function to create the SMA line chart using Chart.js
+        function createSMALineChart(labels, prices, sma) {
+            const ctx = document.getElementById('sma-chart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Bitcoin Price',
+                            data: prices,
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1,
+                            pointRadius: 0,
+                            fill: false,
+                        },
+                        {
+                            label: '12-Month SMA',
+                            data: sma,
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1,
+                            pointRadius: 0,
+                            fill: false,
+                        },
+                    ],
+                },
+                options: {
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'month',
+                                displayFormats: {
+                                    month: 'MMM YYYY',
+                                },
+                            },
+                            ticks: {
+                                autoSkip: true,
+                                maxTicksLimit: 12,
+                            },
+                        },
+                    },
+                },
+            });
         }
 
         (async () => {
-            // Fetch historical Bitcoin price data (last 30 days)
+            // Fetch historical Bitcoin price data (past 12 months)
+            const prices
+            // Fetch historical Bitcoin price data (past 12 months)
             const prices = await fetchHistoricalPriceData();
 
-            // Calculate the 30-day Simple Moving Average (SMA)
-            const smaPrice = calculateSMA(prices);
+            // Calculate the 12-month Simple Moving Average (SMA)
+            const sma = calculateSMA(prices, 30); // 30-day SMA
 
-            // Display the 30-day SMA
-            document.getElementById('sma-price').textContent = '$' + smaPrice.toFixed(2);
+            // Prepare data for the chart
+            const labels = prices.map(price => new Date(price[0]));
+            const priceData = prices.map(price => price[1]);
+            const smaData = sma.map(smaValue => smaValue[1]);
+
+            // Create the SMA line chart using Chart.js
+            createSMALineChart(labels, priceData, smaData);
         })();
     </script>
 </body>
