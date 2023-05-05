@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitcoin Stock-to-Flow Model</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin: 16px 0;
+        }
+
+        p {
+            font-size: 18px;
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Bitcoin Stock-to-Flow Model</h1>
+    <p>Current Bitcoin Price: <span id="current-price"></span></p>
+    <p>Projected Bitcoin Price in 1 Year: <span id="projected-price"></span></p>
+
+    <script>
+        // Constants for the S2F model (change based on historical data analysis)
+        const A = 0.1;
+        const B = 2;
+
+        // Function to fetch the current Bitcoin price
+        async function getCurrentBitcoinPrice() {
+            const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
+            const data = await response.json();
+            return data.bitcoin.usd;
+        }
+
+        // Function to calculate the projected Bitcoin price using the S2F model
+        function calculateProjectedPrice(currentPrice, stock, flow) {
+            return A * Math.pow((stock / (stock + flow)), B) * currentPrice;
+        }
+
+        (async () => {
+            // Fetch the current Bitcoin price and display it
+            const currentPrice = await getCurrentBitcoinPrice();
+            document.getElementById('current-price').textContent = '$' + currentPrice.toFixed(2);
+
+            // Assume the current stock and flow (change based on your analysis)
+            const stock = 18_750_000;
+            const flow = 350_000;
+
+            // Calculate the projected Bitcoin price in 1 year and display it
+            const projectedPrice = calculateProjectedPrice(currentPrice, stock, flow);
+            document.getElementById('projected-price').textContent = '$' + projectedPrice.toFixed(2);
+        })();
+    </script>
+</body>
+</html>
