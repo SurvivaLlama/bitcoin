@@ -17,16 +17,11 @@
             font-size: 24px;
             margin: 16px 0;
         }
-
-        canvas {
-            width: 100%;
-            height: 400px;
-        }
     </style>
 </head>
 <body>
     <h1>Bitcoin 12-Month Simple Moving Average (SMA)</h1>
-    <canvas id="sma-chart"></canvas>
+    <canvas id="sma-chart" width="800" height="400"></canvas>
 
     <script>
         // Function to fetch historical Bitcoin price data (past 12 months)
@@ -95,8 +90,6 @@
         }
 
         (async () => {
-            // Fetch historical Bitcoin price data (past 12 months)
-            const prices
             // Fetch historical Bitcoin price data (past 12 months)
             const prices = await fetchHistoricalPriceData();
 
